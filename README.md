@@ -12,6 +12,18 @@ Overview of the Project:
 
 Project: BIOSIGNALS ANALYSIS FOR SMOKING
 
+1. Simple FNN
+
+
+
+2. Deep FNN
+
+
+
+3. CNN
+
+
+
 Objectives:
  
 • To build and compare various deep learning models for classifying individuals as smokers or non-smokers.
@@ -21,10 +33,13 @@ and learning curves.
 
 Key Activities:
 
-
+1. Data Loading and Exploration: Read CSV file and Visualized data.
+2. Data Preprocessing: Label encoding categorical variables using LabelEncoder, dropped irrelevant columns, boxplots for outlier detection, feature scaling using StandardScaler and Train-test split using train_test_split from sklearn.
+3. Model Building and Training: Basic Neural Network, Deep Neural Network with Dropout and Convolutional Neural Network(CNN).
+4. Evaluation & Visualization: Accuracy, Precision, Recall, F1-Score using sklearn.metrics, ROC Curve and AUC and learning Curves for training and validation accuracy
 
 Technologies Used:
 
 Programmimg Language: Python
-Libraries: 
+Libraries: Panda, NumPy, Seaborn, Matplotlib, Scikit-learn, TensorFlow/Keras
 
