@@ -1,0 +1,255 @@
+import pandas as pd
+
+data = pd.read_csv('smoking.csv')
+data
+data_info = data.info()
+data_info
+data.describe()
+data.isnull().sum()
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.barplot(x=data["gender"], y=data["smoking"])
+plt.show()
+sns.countplot(x=data["gender"], hue=data["smoking"])
+plt.show()
+plt.figure(figsize=(10,5))
+data["smoking"].value_counts().plot.pie(autopct='%0.2f')
+plt.figure(figsize=(9,6))
+sns.histplot(x=data["age"], hue=data["smoking"])
+plt.show()
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+label_encoders = {}
+categorical_columns = ['gender', 'oral', 'tartar']
+
+for column in categorical_columns:
+    le = LabelEncoder()
+    #print(le)
+    data[column] = le.fit_transform(data[column])
+    print(data[column],"\n")
+    label_encoders[column] = le
+    #print(label_encoders[column])
+    
+print(label_encoders)
+data = data.drop(columns=['ID'])
+data
+for i in data.columns:
+    if(data[i].dtypes=='int64' or data[i].dtypes=='float64'):
+        plt.figure(figsize=(12, 3))
+        sns.boxplot(x=data[i].values, orient='h')
+        plt.xlabel(i)
+        plt.show()
+X = data.drop(columns=['smoking'])
+y = data['smoking']
+print(X,"\n\n")
+print(y)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+X_scaled
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
+
+X_train.shape, X_test.shape, y_train.shape, y_test.shape
+import tensorflow as tf
+from tensorflow.keras import layers, models
+import time
+model_1 = models.Sequential([
+    layers.Dense(128, activation='relu', input_shape=(X_train.shape[1],)),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(32, activation='relu'),
+    layers.Dense(1, activation='sigmoid')
+])
+
+model_1
+model_1.compile(optimizer='adam',
+                loss='binary_crossentropy',
+                metrics=['accuracy'])
+start_time = time.time()
+history_1 = model_1.fit(X_train, y_train, epochs=100, batch_size=64, validation_data=(X_test, y_test))
+train_time_1 = time.time() - start_time
+
+print(history_1, "\n")
+
+print(train_time_1)
+start_time = time.time()
+y_pred_1 = model_1.predict(X_test)
+test_time_1 = time.time() - start_time
+
+y_pred_1 = (y_pred_1 > 0.5).astype(int)
+
+print(y_pred_1,"\n") 
+
+print(test_time_1)
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_curve, auc
+train_accuracy = history_1.history['accuracy'][-1]  # Last epoch's accuracy
+
+# Testing Accuracy
+test_loss, test_accuracy = model_1.evaluate(X_test, y_test, verbose=0)
+
+print(f"Training Accuracy: {train_accuracy:.4f}")
+print(f"Testing Accuracy: {test_accuracy:.4f}")
+accuracy_1 = accuracy_score(y_test, y_pred_1)
+accuracy_1
+precision_1 = precision_score(y_test, y_pred_1)
+recall_1 = recall_score(y_test, y_pred_1)
+f1_1 = f1_score(y_test, y_pred_1)
+precision_1, recall_1, f1_1
+fpr_1, tpr_1, _ = roc_curve(y_test, model_1.predict(X_test))
+roc_auc_1 = auc(fpr_1, tpr_1)
+print(roc_auc_1)
+
+plt.figure()
+plt.plot(fpr_1, tpr_1, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc_1)
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic - Model 1')
+plt.legend(loc="lower right")
+plt.show()
+plt.plot(history_1.history['accuracy'], label='train accuracy')
+plt.plot(history_1.history['val_accuracy'], label = 'val accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Model 1 - Learning Curve')
+plt.legend(loc='lower right')
+plt.show()
+
+
+model_2 = models.Sequential([
+    layers.Dense(512, activation='relu', input_shape=(X_train.shape[1],)),
+    layers.Dropout(0.3),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.3),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.3),
+    layers.Dense(64, activation='relu'),
+    layers.Dropout(0.3),
+    layers.Dense(32, activation='relu'),
+    layers.Dropout(0.3),
+    layers.Dense(16, activation='relu'),
+    layers.Dense(1, activation='sigmoid')
+])
+
+model_2
+model_2.compile(optimizer='adam',
+                loss='binary_crossentropy',
+                metrics=['accuracy'])
+start_time = time.time()
+history_2 = model_2.fit(X_train, y_train, epochs=100, batch_size=64, validation_data=(X_test, y_test))
+train_time_2 = time.time() - start_time
+
+print(history_2, "\n")
+
+print(train_time_2)
+start_time = time.time()
+y_pred_2 = model_2.predict(X_test)
+test_time_2 = time.time() - start_time
+
+y_pred_2 = (y_pred_2 > 0.5).astype(int)
+
+print(y_pred_2,"\n") 
+
+print(test_time_2)
+train_accuracy = history_2.history['accuracy'][-1]  # Last epoch's accuracy
+
+# Testing Accuracy
+test_loss, test_accuracy = model_2.evaluate(X_test, y_test, verbose=0)
+
+print(f"Training Accuracy: {train_accuracy:.4f}")
+print(f"Testing Accuracy: {test_accuracy:.4f}")
+accuracy_2 = accuracy_score(y_test, y_pred_2)
+accuracy_2
+precision_2 = precision_score(y_test, y_pred_2)
+recall_2 = recall_score(y_test, y_pred_2)
+f1_2 = f1_score(y_test, y_pred_2)
+precision_2, recall_2, f1_2
+fpr_2, tpr_2, _ = roc_curve(y_test, model_2.predict(X_test))
+roc_auc_2 = auc(fpr_2, tpr_2)
+print(roc_auc_2)
+
+plt.figure()
+plt.plot(fpr_2, tpr_2, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc_2)
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic - Model 2')
+plt.legend(loc="lower right")
+plt.show()
+plt.plot(history_2.history['accuracy'], label='train accuracy')
+plt.plot(history_2.history['val_accuracy'], label = 'val accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Model 2 - Learning Curve')
+plt.legend(loc='lower right')
+plt.show()
+
+
+model_3 = models.Sequential([
+    layers.Reshape((X_train.shape[1], 1), input_shape=(X_train.shape[1],)),
+    layers.Conv1D(32, kernel_size=3, activation='relu'),
+    layers.MaxPooling1D(pool_size=2),
+    layers.Conv1D(64, kernel_size=3, activation='relu'),
+    layers.MaxPooling1D(pool_size=2),
+    layers.Flatten(),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(1, activation='sigmoid')
+])
+
+model_3
+odel_3.compile(optimizer='adam',
+                loss='binary_crossentropy',
+                metrics=['accuracy'])
+start_time = time.time()
+history_3 = model_3.fit(X_train, y_train, epochs=100, batch_size=64, validation_data=(X_test, y_test))
+train_time_3 = time.time() - start_time
+
+print(history_3, "\n")
+
+print(train_time_3)
+start_time = time.time()
+y_pred_3 = model_3.predict(X_test)
+test_time_3 = time.time() - start_time
+
+y_pred_3 = (y_pred_3 > 0.5).astype(int)
+
+print(y_pred_3,"\n") 
+
+print(test_time_3)
+train_accuracy = history_3.history['accuracy'][-1]  # Last epoch's accuracy
+
+# Testing Accuracy
+test_loss, test_accuracy = model_3.evaluate(X_test, y_test, verbose=0)
+
+print(f"Training Accuracy: {train_accuracy:.4f}")
+print(f"Testing Accuracy: {test_accuracy:.4f}")
+accuracy_3 = accuracy_score(y_test, y_pred_3)
+accuracy_3
+precision_3 = precision_score(y_test, y_pred_3)
+recall_3 = recall_score(y_test, y_pred_3)
+f1_3 = f1_score(y_test, y_pred_3)
+precision_3, recall_3, f1_3
+# ROC Curve and AUC
+fpr_3, tpr_3, _ = roc_curve(y_test, model_3.predict(X_test))
+roc_auc_3 = auc(fpr_3, tpr_3)
+print(roc_auc_3)
+
+plt.figure()
+plt.plot(fpr_3, tpr_3, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc_3)
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic - Model 3')
+plt.legend(loc="lower right")
+plt.show()
+plt.plot(history_3.history['accuracy'], label='train accuracy')
+plt.plot(history_3.history['val_accuracy'], label = 'val accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Model 3 - Learning Curve')
+plt.legend(loc='lower right')
+plt.show()
