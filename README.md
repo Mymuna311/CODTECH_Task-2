@@ -14,15 +14,15 @@ Project: BIOSIGNALS ANALYSIS FOR SMOKING
 
 1. Simple FNN
 
-
+ ![Screenshot 2025-06-15 182420](https://github.com/user-attachments/assets/8747846b-772a-454c-b091-721138318cd5)
 
 2. Deep FNN
 
-
+![Screenshot 2025-06-15 182429](https://github.com/user-attachments/assets/84f2fcd8-55dc-4989-9fd5-8ff512c24260)
 
 3. CNN
 
-
+![Screenshot 2025-06-15 182436](https://github.com/user-attachments/assets/1e4eb8c4-c400-4b0e-9489-5d802c9014c9)
 
 Objectives:
  
